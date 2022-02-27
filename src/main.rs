@@ -2,6 +2,21 @@ use std::fs::File;
 use std::io::{BufReader,Read};
 use std::io::Result;
 
+fn get_bit(inst : u32,n : u32) -> bool{ inst & (1 << n) != 0 }
+
+fn get_bits(inst: u32) -> [bool; 32] {
+    let mut bit_inst : [bool; 32] = [false; 32];
+    let mut i : u32 = 0;
+    loop{
+        if i < 32{ 
+            bit_inst[i as usize] = get_bit(inst,31 - i); 
+            i += 1;
+        }
+        else { break; }
+    }
+    bit_inst
+}
+
 struct InsMem{
     mem : Vec<u8>,
     path : String
@@ -57,8 +72,7 @@ impl PC{
         loop{
             if let Some(x) = mem.get_ins(self.counter) {
                 let inst = x;
-                println!("{}",x);
-                self.counter = self.counter + 0x04
+                self.counter = self.counter + 0x04;
                 // Send to decoder
             } else{ break; }
         }

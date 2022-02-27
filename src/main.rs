@@ -23,6 +23,14 @@ impl InsMem{
         Ok(())
     }
 
+    fn get_ins(&mut self,addr: u32) -> u32{
+        let va = addr as usize;
+        if let Some(val) = self.mem.get(va){
+            println!("{}",*val);
+        }
+        1
+    }
+
     fn print_mem(&self){
         println!("{:?}",self.mem);
     }
@@ -38,5 +46,6 @@ fn main() -> Result<()> {
     println!("Reading the Instructions!");
     ins_mem.populate_mem()?;
     ins_mem.print_mem();
+    ins_mem.get_ins(0x4);
     Ok(())
 }

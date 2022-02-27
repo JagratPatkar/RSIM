@@ -23,12 +23,22 @@ impl InsMem{
         Ok(())
     }
 
-    fn get_ins(&mut self,addr: u32) -> u32{
-        let va = addr as usize;
-        if let Some(val) = self.mem.get(va){
-            println!("{}",*val);
+    fn get_ins(&mut self,addr: u32) -> Option<u32> {
+        let mut va = addr as usize;
+        let mut b : [u8;4] = [0,0,0,0];
+        let mut i = 0;
+        loop{
+            if i < 4 {
+                if let Some(val) = self.mem.get(va){
+                    b[i] = *val;
+                    i += 1;
+                    let p = va as u32;
+                    va = (p + 0x01) as usize;
+                }
+                else{ return None; }
+            }else { break; }
         }
-        1
+        Some(u32::from_be_bytes(b))
     }
 
     fn print_mem(&self){
@@ -36,6 +46,28 @@ impl InsMem{
     }
 }
 
+
+struct PC{
+    counter : u32,
+    reset_val : u32
+}
+
+impl PC{
+    fn start_fetch(&mut self,mem : &mut InsMem){
+        loop{
+            if let Some(x) = mem.get_ins(self.counter) {
+                let inst = x;
+                println!("{}",x);
+                self.counter = self.counter + 0x04
+                // Send to decoder
+            } else{ break; }
+        }
+    }
+}
+
+struct Decoder{
+
+}
 
 fn main() -> Result<()> {
     println!("RSIM Configured!");
@@ -45,7 +77,11 @@ fn main() -> Result<()> {
     };
     println!("Reading the Instructions!");
     ins_mem.populate_mem()?;
-    ins_mem.print_mem();
-    ins_mem.get_ins(0x4);
+    let mut pc = PC{
+        counter : 0x0000,
+        reset_val : 0x0000
+    };
+    pc.start_fetch(&mut ins_mem);
+    println!("Simulation Complete!");
     Ok(())
 }

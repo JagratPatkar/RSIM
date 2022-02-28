@@ -66,7 +66,7 @@ impl PC{
                     imm : 0x0
                 };
                 decoder.init_imm();
-                println!("{}",decoder.imm)
+                println!("{}",decoder.is_addi());
             } else{ break; }
         }
     }
@@ -141,29 +141,29 @@ impl Decoder{
     { self.is_s() | self.is_i() | self.is_j() | self.is_u() | self.is_b()  }
 
     fn imm_i(&mut self) {
-        self.imm.set_bit_range(0..10,self.inst.bit_range(20..30));
+        self.imm.set_bit_range(0..11,self.inst.bit_range(20..31));
         if self.inst.bit(31) {  self.imm.set_bit_range(11..32,0b11111111111111111111); }
         else { self.imm.set_bit_range(11..32,0b00000000000000000000); }
     }
 
     fn imm_s(&mut self) {
-        self.imm.set_bit_range(0..5,self.inst.bit_range(7..11));
-        self.imm.set_bit_range(5..11,self.inst.bit_range(25..30));
+        self.imm.set_bit_range(0..5,self.inst.bit_range(7..12));
+        self.imm.set_bit_range(5..11,self.inst.bit_range(25..31));
         if self.inst.bit(31) {  self.imm.set_bit_range(11..32,0b11111111111111111111); }
         else { self.imm.set_bit_range(11..32,0b00000000000000000000); }
     }
 
     fn imm_b(&mut self) {
         self.imm.set_bit(0,false);
-        self.imm.set_bit_range(1..5,self.inst.bit_range(8..11));
-        self.imm.set_bit_range(5..11,self.inst.bit_range(25..30));
+        self.imm.set_bit_range(1..5,self.inst.bit_range(8..12));
+        self.imm.set_bit_range(5..11,self.inst.bit_range(25..31));
         if self.inst.bit(31) {  self.imm.set_bit_range(12..32,0b1111111111111111111); }
         else { self.imm.set_bit_range(12..32,0b0000000000000000000); }
     }
 
     fn imm_u(&mut self) {
         self.imm.set_bit_range(0..12,0b000000000000);
-        self.imm.set_bit_range(12..32,self.inst.bit_range(12..31));
+        self.imm.set_bit_range(12..32,self.inst.bit_range(12..32));
     }
 
     fn imm_j(&mut self) {
@@ -182,9 +182,202 @@ impl Decoder{
         else if self.is_u() { self.imm_u() }
         else if self.is_j() { self.imm_j() }
     }
-    
-    
 
+    fn norm_bit(&mut self) -> u32 {
+        let mut dec_bits : u32 = 0u32;
+        dec_bits.set_bit_range(0..7,self.inst.bit_range(0..7)); 
+        dec_bits.set_bit_range(7..10,self.inst.bit_range(12..15));
+        dec_bits.set_bit(10,self.inst.bit(30));
+        dec_bits
+    }
+
+    fn fori_bit(&mut self) -> u32 {
+        let mut dec_bits : u32 = 0u32;
+        dec_bits.set_bit_range(0..7,self.inst.bit_range(0..7)); 
+        dec_bits.set_bit_range(7..10,self.inst.bit_range(12..15));
+        dec_bits.set_bit(10,self.imm.bit(10));
+        dec_bits
+    }
+    
+    fn is_beq(&mut self) -> bool{
+        let mut dec_bits = self.norm_bit();
+        if (dec_bits == 99u32) || (dec_bits == 1123u32) { return true; }
+        false
+    }
+
+    fn is_bne(&mut self) -> bool{
+        let mut dec_bits = self.norm_bit();
+        if (dec_bits == 227u32) || (dec_bits == 1251u32) { return true; }
+        false
+    }
+
+    fn is_blt(&mut self) -> bool{
+        let mut dec_bits = self.norm_bit();
+        if (dec_bits == 611u32) | (dec_bits == 1635u32) { return true; }
+        false
+    }
+
+    fn is_bge(&mut self) -> bool{
+        let mut dec_bits = self.norm_bit();
+        if (dec_bits == 739u32) || (dec_bits == 1763u32) { return true; }
+        false
+    }
+
+    fn is_bltu(&mut self) -> bool{
+        let mut dec_bits = self.norm_bit();
+        if (dec_bits == 867u32) || (dec_bits == 1891u32) { return true; }
+        false
+    }
+
+    fn is_bgeu(&mut self) -> bool{
+        let mut dec_bits = self.norm_bit();
+        if (dec_bits == 995u32) || (dec_bits == 2019u32) { return true; }
+        false
+    }
+
+    fn is_add(&mut self) -> bool{
+        let mut dec_bits = self.norm_bit();
+        if dec_bits == 51u32  { return true; }
+        false
+    }
+
+    fn is_sub(&mut self) -> bool{
+        let mut dec_bits = self.norm_bit();
+        if dec_bits == 1075u32  { return true; }
+        false
+    }
+
+    fn is_sll(&mut self) -> bool{
+        let mut dec_bits = self.norm_bit();
+        if dec_bits == 179u32  { return true; }
+        false
+    }
+
+    fn is_slt(&mut self) -> bool{
+        let mut dec_bits = self.norm_bit();
+        if dec_bits == 307u32  { return true; }
+        false
+    }
+
+    fn is_sltu(&mut self) -> bool{
+        let mut dec_bits = self.norm_bit();
+        if dec_bits == 435u32  { return true; }
+        false
+    }
+
+    fn is_xor(&mut self) -> bool{
+        let mut dec_bits = self.norm_bit();
+        if dec_bits == 563u32  { return true; }
+        false
+    }
+
+    fn is_srl(&mut self) -> bool{
+        let mut dec_bits = self.norm_bit();
+        if dec_bits == 691u32  { return true; }
+        false
+    }
+
+    fn is_sra(&mut self) -> bool{
+        let mut dec_bits = self.norm_bit();
+        if dec_bits == 1715u32  { return true; }
+        false
+    }
+
+    fn is_or(&mut self) -> bool{
+        let mut dec_bits = self.norm_bit();
+        if dec_bits == 819u32  { return true; }
+        false
+    }
+
+    fn is_and(&mut self) -> bool{
+        let mut dec_bits = self.norm_bit();
+        if dec_bits == 947u32  { return true; }
+        false
+    }
+
+    fn is_lui(&mut self) -> bool{
+        let mut dec_bits = self.inst.bit_range(0..7);
+        if dec_bits == 55u32  { return true; }
+        false
+    }
+
+    fn is_auipc(&mut self) -> bool{
+        let mut dec_bits = self.inst.bit_range(0..7);
+        if dec_bits == 23u32  { return true; }
+        false
+    }
+
+    fn is_jal(&mut self) -> bool{
+        let mut dec_bits = self.inst.bit_range(0..7);
+        if dec_bits == 111u32  { return true; }
+        false
+    }
+
+    fn is_load(&mut self) -> bool {
+        let mut dec_bits = self.inst.bit_range(0..7);
+        if dec_bits == 3u32  { return true; }
+        false
+    }
+
+    fn is_addi(&mut self) -> bool{
+        let mut dec_bits = self.fori_bit();
+        if (dec_bits == 19u32) || (dec_bits == 1043u32) { return true; }
+        false
+    }
+
+    fn is_jalr(&mut self) -> bool{
+        let mut dec_bits = self.fori_bit();
+        if (dec_bits == 103u32) || (dec_bits == 1127u32) { return true; }
+        false
+    }
+
+    fn is_slti(&mut self) -> bool{
+        let mut dec_bits = self.fori_bit();
+        if (dec_bits == 275u32) || (dec_bits == 1299u32) { return true; }
+        false
+    }
+
+    fn is_sltiu(&mut self) -> bool{
+        let mut dec_bits = self.fori_bit();
+        if (dec_bits == 403u32) || (dec_bits == 1427u32) { return true; }
+        false
+    }
+
+    fn is_xori(&mut self) -> bool{
+        let mut dec_bits = self.fori_bit();
+        if (dec_bits == 531u32) || (dec_bits == 1555u32) { return true; }
+        false
+    }
+
+    fn is_ori(&mut self) -> bool{
+        let mut dec_bits = self.fori_bit();
+        if (dec_bits == 787u32) || (dec_bits == 1811u32) { return true; }
+        false
+    }
+
+    fn is_andi(&mut self) -> bool{
+        let mut dec_bits = self.fori_bit();
+        if (dec_bits == 915u32) || (dec_bits == 1939u32) { return true; }
+        false
+    }
+
+    fn is_slli(&mut self) -> bool {
+        let mut dec_bits = self.fori_bit();
+        if dec_bits == 147u32  { return true; }
+        false
+    }
+
+    fn is_srli(&mut self) -> bool {
+        let mut dec_bits = self.fori_bit();
+        if dec_bits == 659u32  { return true; }
+        false
+    }
+
+    fn is_srai(&mut self) -> bool {
+        let mut dec_bits = self.fori_bit();
+        if dec_bits == 1683u32  { return true; }
+        false
+    }
 }
 
 

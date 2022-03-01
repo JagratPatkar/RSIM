@@ -17,10 +17,11 @@ mod im;
 mod pc;
 
 fn main() -> Result<()> {
+    let path = std::env::args().nth(1).expect("no path given");
     println!("RSIM Configured!");
     let mut ins_mem = InsMem{
         mem : Vec::new(),
-        path : String::from("src/output.bin")
+        path : std::path::PathBuf::from(path)
     };
     println!("Reading the Instructions!");
     ins_mem.populate_mem()?;

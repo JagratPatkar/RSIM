@@ -5,12 +5,12 @@ use bit::BitIndex;
 
 pub struct InsMem{
     pub mem : Vec<u8>,
-    pub path : String
+    pub path : std::path::PathBuf
 }
 
 impl InsMem{
     pub fn populate_mem(&mut self) -> Result<()> {
-        let f = File::open(self.path.as_str())?;
+        let f = File::open(&mut self.path)?;
         let reader = BufReader::new(f);
         let mut b_reader = reader.bytes();
         loop{

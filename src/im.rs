@@ -33,8 +33,9 @@ impl InsMem{
                 if let Some(val) = self.mem.get(va){
                     b[i] = *val;
                     i += 1;
-                    let p = va as u32;
-                    va = (p + 0x01) as usize;
+                    let mut p = va as u32;
+                    p = p.overflowing_add(0x01).0;
+                    va = p as usize;
                 }
                 else{ return None; }
             }else { break; }

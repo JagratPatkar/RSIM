@@ -72,23 +72,24 @@ impl Decoder{
 
     pub fn imm_i(&mut self) {
         self.imm.set_bit_range(0..11,self.inst.bit_range(20..31));
-        if self.inst.bit(31) {  self.imm.set_bit_range(11..32,0b11111111111111111111); }
-        else { self.imm.set_bit_range(11..32,0b00000000000000000000); }
+        if self.inst.bit(31) {  self.imm.set_bit_range(11..32,0b111111111111111111111); }
+        else { self.imm.set_bit_range(11..32,0b000000000000000000000); }
     }
 
     pub fn imm_s(&mut self) {
         self.imm.set_bit_range(0..5,self.inst.bit_range(7..12));
         self.imm.set_bit_range(5..11,self.inst.bit_range(25..31));
-        if self.inst.bit(31) {  self.imm.set_bit_range(11..32,0b11111111111111111111); }
-        else { self.imm.set_bit_range(11..32,0b00000000000000000000); }
+        if self.inst.bit(31) {  self.imm.set_bit_range(11..32,0b111111111111111111111); }
+        else { self.imm.set_bit_range(11..32,0b000000000000000000000); }
     }
 
     pub fn imm_b(&mut self) {
         self.imm.set_bit(0,false);
         self.imm.set_bit_range(1..5,self.inst.bit_range(8..12));
         self.imm.set_bit_range(5..11,self.inst.bit_range(25..31));
-        if self.inst.bit(31) {  self.imm.set_bit_range(12..32,0b1111111111111111111); }
-        else { self.imm.set_bit_range(12..32,0b0000000000000000000); }
+        self.imm.set_bit(11,self.inst.bit(7));
+        if self.inst.bit(31) {  self.imm.set_bit_range(12..32,0b11111111111111111111); }
+        else { self.imm.set_bit_range(12..32,0b00000000000000000000); }
     }
 
     pub fn imm_u(&mut self) {

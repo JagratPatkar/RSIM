@@ -10,7 +10,7 @@ impl Decoder{
 
     pub fn is_u(&mut self) -> bool{ 
         let val = self.inst.bit_range(2..7);
-        if (val == 5u32) | (val == 13u32) { return true; } 
+        if (val == 5u32) || (val == 13u32) { return true; } 
         false
     }
 
@@ -28,23 +28,23 @@ impl Decoder{
 
     pub fn is_s(&mut self) -> bool{ 
         let val = self.inst.bit_range(2..7);
-        if (val == 8u32) | (val == 9u32) { return true; } 
+        if (val == 8u32) || (val == 9u32) { return true; } 
         false
     }
 
     pub fn is_r(&mut self) -> bool{ 
         let val = self.inst.bit_range(2..7);
-        if (val == 11u32) | (val == 12u32) 
-           | (val == 14u32) | (val == 20u32) 
+        if (val == 11u32) || (val == 12u32) 
+           || (val == 14u32) || (val == 20u32) 
         { return true; } 
         false
     }
 
     pub fn is_i(&mut self) -> bool{ 
         let val = self.inst.bit_range(2..7);
-        if (val == 0u32) | (val == 1u32) 
-           | (val == 4u32) | (val == 6u32) 
-           | (val == 25u32) 
+        if (val == 0u32) || (val == 1u32) 
+           || (val == 4u32) || (val == 6u32) 
+           || (val == 25u32) 
         { return true; } 
         false
     }
@@ -59,16 +59,16 @@ impl Decoder{
     { self.inst.bit_range(7..12) }
 
     pub fn rs1_valid(&mut self) -> bool
-    { self.is_r() | self.is_s() | self.is_b() | self.is_i() }
+    { self.is_r() || self.is_s() || self.is_b() || self.is_i() }
 
     pub fn rs2_valid(&mut self) -> bool
-    { self.is_r() | self.is_s() | self.is_b() }
+    { self.is_r() || self.is_s() || self.is_b() }
 
     pub fn rd_valid(&mut self) -> bool
-    { (self.is_r() | self.is_i() | self.is_j() | self.is_u()) & (self.rd() != 0)  }
+    { (self.is_r() || self.is_i() || self.is_j() || self.is_u()) & (self.rd() != 0)  }
 
     pub fn imm_valid(&mut self) -> bool 
-    { self.is_s() | self.is_i() | self.is_j() | self.is_u() | self.is_b()  }
+    { self.is_s() || self.is_i() || self.is_j() || self.is_u() || self.is_b()  }
 
     pub fn imm_i(&mut self) {
         self.imm.set_bit_range(0..11,self.inst.bit_range(20..31));
@@ -144,7 +144,7 @@ impl Decoder{
 
     pub fn is_blt(&mut self) -> bool{
         let mut dec_bits = self.norm_bit();
-        if (dec_bits == 611u32) | (dec_bits == 1635u32) { return true; }
+        if (dec_bits == 611u32) || (dec_bits == 1635u32) { return true; }
         false
     }
 

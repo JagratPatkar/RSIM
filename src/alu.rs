@@ -11,13 +11,13 @@ impl ALU{
 
     fn sltu_result(&mut self,rf : &mut RefMem) -> u32{
         let mut t : u32 = 0x0;
-        t.set_bit(1,rf.src1 < rf.src2);
+        t.set_bit(0,rf.src1 < rf.src2);
         t
     }
 
     fn sltiu_result(&mut self,rf : &mut RefMem,dec : &mut Decoder) -> u32{
         let mut t : u32 = 0x0;
-        t.set_bit(1,(rf.src1 < dec.imm));
+        t.set_bit(0,(rf.src1 < dec.imm));
         t
     }
 
@@ -50,7 +50,7 @@ impl ALU{
         }
     }
 
-    pub fn compute(&mut self,dec: &mut Decoder,rf : &mut RefMem,dm : &mut DataMem,pc: u32){
+    pub fn compute(&mut self,dec: &mut Decoder,rf : &mut RefMem,pc: u32){
         if dec.is_addi() {  self.result = rf.src1.overflowing_add(dec.imm).0 }
         else if dec.is_add() { self.result = rf.src1.overflowing_add(rf.src2).0 }
         else if dec.is_andi() { self.result = rf.src1 & dec.imm }
@@ -63,7 +63,7 @@ impl ALU{
         else if dec.is_xor() { self.result = rf.src1 ^ rf.src2 }
         else if dec.is_sub() { self.result = rf.src1.overflowing_sub(rf.src2).0 }
         else if dec.is_sll() { self.result = rf.src1 << rf.src2.bit_range(0..5) }
-        else if dec.is_srl() { self.result = rf.src1 << rf.src2.bit_range(0..5) }
+        else if dec.is_srl() { self.result = rf.src1 >> rf.src2.bit_range(0..5) }
         else if dec.is_sltu() { self.result = self.sltu_result(rf) }
         else if dec.is_sltiu() { self.result = self.sltiu_result(rf,dec) }
         else if dec.is_lui() { self.result = self.lui(dec) }
@@ -73,12 +73,14 @@ impl ALU{
             let t = self.sltu_result(rf);
             self.result = self.slt(rf,rf.src2,t) 
         }
-        else if dec.is_sltiu() { 
+        else if dec.is_slti() { 
             let t = self.sltiu_result(rf,dec);
             self.result = self.slt(rf,dec.imm,t) 
         }
         else if dec.is_sra() { self.result = self.sra(rf).bit_range(0..32) as u32 }
-        else if dec.is_srai() { self.result = self.srai(rf,dec).bit_range(0..32) as u32 }
+        else if dec.is_srai() { 
+            self.result = self.srai(rf,dec).bit_range(0..32) as u32 ;
+        }
         else if dec.is_load() || dec.is_s() {  self.result = rf.src1.overflowing_add(dec.imm).0 }
         else { self.result = 0x0 }
     }

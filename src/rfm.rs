@@ -24,6 +24,7 @@ pub struct RefMem {
      }
      pub fn read(&mut self,addr: u32) -> u32{ self.mem[addr as usize] }
      pub fn write(&mut self,res: u32,dec: &mut Decoder){
+        
          if dec.rd_valid() { 
              let va = (dec.rd()) as usize;
              self.mem[va] = res; 

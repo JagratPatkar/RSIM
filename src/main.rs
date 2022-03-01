@@ -16,12 +16,6 @@ mod alu;
 mod im;
 mod pc;
 
-
-
-
-
-
-
 fn main() -> Result<()> {
     println!("RSIM Configured!");
     let mut ins_mem = InsMem{

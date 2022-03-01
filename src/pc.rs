@@ -35,6 +35,7 @@ impl PC{
                
                 // Send to decoder
                 decoder.init_inst(inst);
+                decoder.reset_imm();
                 decoder.init_imm();
                 ref_mem.compute(&mut decoder);
                 alu.compute(&mut decoder,&mut ref_mem,&mut d_mem);

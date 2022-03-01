@@ -5,6 +5,7 @@ pub struct Decoder{
 }
 
 impl Decoder{
+    pub fn reset_imm(&mut self){ self.imm = 0x0 }
     pub fn init_inst(&mut self,inst : u32){ self.inst = inst }
 
     pub fn is_u(&mut self) -> bool{ 
@@ -49,13 +50,13 @@ impl Decoder{
     }
 
     pub fn rs1(&mut self) -> u32 
-    { self.inst.bit_range(20..25) }
+    { self.inst.bit_range(15..20) }
 
     pub fn rs2(&mut self) -> u32 
-    { self.inst.bit_range(15..20) }
+    { self.inst.bit_range(20..25) }
 
     pub fn rd(&mut self) -> u32
-    { self.inst.bit_range(15..20) }
+    { self.inst.bit_range(7..12) }
 
     pub fn rs1_valid(&mut self) -> bool
     { self.is_r() | self.is_s() | self.is_b() | self.is_i() }

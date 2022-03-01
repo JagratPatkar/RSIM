@@ -25,7 +25,7 @@ impl PC{
         };
         ref_mem.init();
         let mut d_mem = DataMem{
-            mem : [0; 32*4]
+            mem : [0; 32]
         };
         let mut alu = ALU{
             result: 0x0
@@ -33,16 +33,21 @@ impl PC{
         loop{
             if let Some(x) = mem.get_ins(self.counter) {
                 let inst = x;
-                // Send to decoder
                 decoder.init_inst(inst);
                 decoder.reset_imm();
                 decoder.init_imm();
                 ref_mem.compute(&mut decoder);
                 alu.compute(&mut decoder,&mut ref_mem,&mut d_mem,self.counter);
-                ref_mem.write(alu.result,&mut decoder);
-                //data mem 
+                d_mem.store(alu.result.bit_range(0..5),&mut decoder,ref_mem.src2);
+                let l_data  = d_mem.load(alu.result.bit_range(0..5));
+                let res = if decoder.is_load() { l_data } else { alu.result };
+                ref_mem.write(res,&mut decoder);
                 self.next(&mut decoder,&mut ref_mem);
-            } else{ ref_mem.print_mem(); break; }
+            } else{ 
+                ref_mem.print_mem(); 
+                d_mem.print_mem();
+                break;
+            }
         }
     }
 

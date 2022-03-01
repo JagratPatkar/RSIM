@@ -21,7 +21,7 @@ impl DataMem{
         }
     }
 
-    pub fn load(&mut self,dec: &mut Decoder,addr: u32) -> u32{
+    pub fn load(&mut self,addr: u32) -> u32{
         let mut va = addr as usize;
         let mut b : [u8;4] = [0,0,0,0];
         let mut i = 0;

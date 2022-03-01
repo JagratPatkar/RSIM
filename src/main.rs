@@ -1,13 +1,13 @@
 extern crate bit;
 use std::io::Result;
 use crate::im::InsMem;
-use crate::pc::PC;
+use crate::cpu::CPU;
 mod decoder;
 mod dm;
 mod rfm;
 mod alu;
 mod im;
-mod pc;
+mod cpu;
 
 fn main() -> Result<()> {
     let path = std::env::args().nth(1).expect("no path given");
@@ -18,11 +18,11 @@ fn main() -> Result<()> {
     };
     println!("Reading the Instructions!");
     ins_mem.populate_mem()?;
-    let mut pc = PC{
+    let mut cpu = CPU{
         counter : 0x0000,
         reset_val : 0x0000
     };
-    pc.start_fetch(&mut ins_mem);
+    cpu.start_fetch(&mut ins_mem);
     println!("Simulation Complete!");
     Ok(())
 }

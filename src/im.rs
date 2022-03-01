@@ -41,7 +41,7 @@ impl InsMem{
         }
         Some(u32::from_be_bytes(b))
     }
-
+    #[allow(dead_code)]
     pub fn print_mem(&mut self){
         println!("{:?}",self.mem);
     }

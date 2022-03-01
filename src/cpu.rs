@@ -7,12 +7,12 @@ use bit::BitIndex;
 
 
 
-pub struct PC{
+pub struct CPU{
     pub counter : u32,
     pub reset_val : u32
 }
 
-impl PC{
+impl CPU{
     pub fn start_fetch(&mut self,mem : &mut InsMem){
         let mut decoder = Decoder{
             inst: 0x0,

@@ -38,7 +38,7 @@ impl PC{
                 decoder.reset_imm();
                 decoder.init_imm();
                 ref_mem.compute(&mut decoder);
-                alu.compute(&mut decoder,&mut ref_mem,&mut d_mem);
+                alu.compute(&mut decoder,&mut ref_mem,&mut d_mem,self.counter);
                 ref_mem.write(alu.result,&mut decoder);
                 //data mem 
                 self.next(&mut decoder,&mut ref_mem);
@@ -47,13 +47,9 @@ impl PC{
     }
 
     fn next(&mut self,dec : &mut Decoder,rf: &mut RefMem){
-        if self.is_valid_br(dec,rf) || dec.is_j() { 
-            let mut t = self.counter.overflowing_add(dec.imm); 
-            self.counter = t.0;
-            ()
-        }
-        else if dec.is_jalr() { self.counter = rf.src1 + dec.imm } 
-        else { self.counter += 0x04; }
+        if self.is_valid_br(dec,rf) || dec.is_j() {  self.counter = self.counter.overflowing_add(dec.imm).0; }
+        else if dec.is_jalr() { self.counter = rf.src1.overflowing_add(dec.imm).0 } 
+        else { self.counter = self.counter.overflowing_add(0x04).0; }
     }
 
     fn is_valid_br(&mut self,dec : &mut Decoder,rf: &mut RefMem) -> bool{

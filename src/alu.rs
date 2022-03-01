@@ -1,5 +1,4 @@
 use crate::decoder::Decoder;
-use crate::dm::DataMem;
 use crate::rfm::RefMem;
 use bit::BitIndex;
 
@@ -17,7 +16,7 @@ impl ALU{
 
     fn sltiu_result(&mut self,rf : &mut RefMem,dec : &mut Decoder) -> u32{
         let mut t : u32 = 0x0;
-        t.set_bit(0,(rf.src1 < dec.imm));
+        t.set_bit(0,rf.src1 < dec.imm);
         t
     }
 

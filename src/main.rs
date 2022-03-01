@@ -1,12 +1,5 @@
 extern crate bit;
-use std::fs::File;
-use std::io::{BufReader,Read};
 use std::io::Result;
-use bit::BitIndex;
-use crate::decoder::Decoder;
-use crate::dm::DataMem;
-use crate::rfm::RefMem;
-use crate::alu::ALU;
 use crate::im::InsMem;
 use crate::pc::PC;
 mod decoder;

@@ -1,7 +1,6 @@
 use std::fs::File;
 use std::io::{BufReader,Read};
 use std::io::Result;
-use bit::BitIndex;
 
 pub struct InsMem{
     pub mem : Vec<u8>,
